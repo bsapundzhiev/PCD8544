@@ -1,0 +1,175 @@
+<!DOCTYPE HTML>
+<html>
+    <head>
+    <script type="text/javascript">
+    /* Bitmap 2 lcd converter adopted from java code found in the Internet
+     * Author: Borislav Sapundzhiev 
+     * License: Beerware.
+     */
+    var BitmapToLCD = (function() {
+
+    exports = {};
+
+    var WIDTH  = 84;
+    var HEIGHT = 48;
+
+    function create2DArray(rows, columns) {
+        return Array.apply(null, Array(rows)).map(function(e) {
+            return Array(columns);
+        });
+    }
+
+    function getRGB2GrayScale(data) {
+        var result= [];
+        for (var i = 0; i < data.length; i += 4) {
+            var avg = (data[i] + data[i +1] + data[i +2]) / 3;
+            result.push(avg);
+        }
+        return result;
+    }
+
+
+    function draw(image) {
+
+        var canvas = document.getElementById("canvas");
+        var ctx = canvas.getContext("2d");
+        ctx.drawImage(image, 0, 0, WIDTH, HEIGHT);
+
+        var imgData  = ctx.getImageData(0, 0, WIDTH, HEIGHT).data;
+        var rgbs = getRGB2GrayScale(imgData); 
+
+        var row = 0;
+        var col = 0;
+        var bit = 0;
+        var ba = create2DArray(HEIGHT/8, WIDTH);
+        var result = [];
+        for ( i = 0; i < rgbs.length ; i++) {
+
+                var val = rgbs[i] & 0x01;
+                //invert the value              
+                val = (val == 1 ? 0 : 1);
+
+                ba[row][col] |= val << bit;
+                
+                //next column
+                col++;
+
+                //next bit
+                if (col >=WIDTH) {
+                    col = 0;
+                    bit++;
+                }
+
+                //next data row
+                if (bit >=8) {
+                    bit = 0;
+                    for ( x = 0; x < WIDTH; x++){
+                        
+                        var s = ba[row][x].toString(16);
+                        
+                        //Do some formatting
+                        if (s.length > 2) {
+                            s = s.substring(s.length - 2);
+                        }
+                        while (s.length < 2) {
+                            s = "0" + s;
+                        }
+                        result.push("0x" + s);
+                    }
+                    row++;
+                }
+        }
+        console.log(result);
+        drawResult(rgbs);
+        return result.toString();
+    }
+
+    function drawResult(arr) {
+        var pixelLength = WIDTH * HEIGHT;
+        var data = new Uint8Array(arr);
+        data = data.reduce(function (carry, current, index) {
+            var baseIndex = index * 4;
+            carry[baseIndex]     = current;
+            carry[baseIndex + 1] = current;
+            carry[baseIndex + 2] = current;
+            carry[baseIndex + 3] = 256;
+            return carry;
+        }, new Uint8ClampedArray(pixelLength * 4));
+
+        var canvas = document.getElementById("canvas2");
+        var ctx = canvas.getContext("2d");
+
+        var imageData = ctx.createImageData(WIDTH, HEIGHT);
+        imageData.data.set(data);
+        ctx.putImageData(imageData, 0, 0);
+    }
+    
+    function getRGB2GrayScale1(data) {
+        var result= [];
+        for (var i = 0; i < data.length; i += 4) {
+            result.push(data[i +3])
+            
+        }
+        return result;
+    }
+
+    function drawFont() {
+        var s = '';
+        for (var i=32; i<=127;i++){
+            s += String.fromCharCode(i);
+        }
+
+        var ctx = document.getElementById('canvas-font').getContext('2d');
+        ctx.font = "18px serif";
+        ctx.fillText("H", 10, 10+ 18);
+    
+        var imgData  = ctx.getImageData(0, 0, WIDTH, HEIGHT).data;
+
+        var rgbs = getRGB2GrayScale1(imgData); 
+        console.log(rgbs.toString());
+    }
+
+    exports.draw = draw;
+    exports.drawFont = drawFont;
+    return exports; 
+
+    })();
+    </script>
+    </head>
+    <body>
+    <h1>Bitamp 84x48 to lcd convertor</h1>
+    <div>
+        <canvas id="canvas" width="84" height="48"></canvas>
+        <canvas id="canvas2" width="84" height="48"></canvas>
+        <canvas id="canvas-font" width="84" height="48" style="border-style: solid;"></canvas>
+    </div>
+    <div>
+        <!--
+        <img id="img" src="img1.bmp">
+        -->
+        <input type="file" id="image">
+    </div>
+    <div>
+        <textarea id="result"  style="width: 80%; height: 250px;"></textarea>
+    </div>
+    <script type="text/javascript">
+        window.onload = function() {
+
+            BitmapToLCD.drawFont();
+        };
+
+        document.getElementById('image').onchange = function (event) {
+            var selectedFile = event.target.files[0];
+            var img = new Image();
+            img.crossOrigin = "Anonymous";
+
+            img.onload = function() {
+                document.getElementById('result').value = BitmapToLCD.draw(img);
+                 
+            }
+            img.src = URL.createObjectURL(selectedFile);
+        };
+    </script>
+   </body>
+</html>
+
