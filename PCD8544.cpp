@@ -39,7 +39,7 @@ void PCD8544::begin()
   LcdClear();
 }
 
-size_t PCD8544::write (uint8_t c)
+size_t PCD8544::write (byte c)
 {
   LcdWrite(LCD_DATA, 0x00);
   for (int index = 0; index < 5; index++)
@@ -88,10 +88,23 @@ void PCD8544::setPower(bool on)
 // gotoXY routine to position cursor 
 // x - range: 0 to 84
 // y - range: 0 to 5
-void PCD8544::gotoXY(int x, int y)
+void PCD8544::gotoXY(byte x, byte y)
 {
   LcdWrite( 0, 0x80 | x);  // Column.
   LcdWrite( 0, 0x40 | y);  // Row.  
+}
+
+void PCD8544::drawPX(byte  x, byte  y)
+{
+  static unsigned char b;
+  unsigned char py = y % 8;
+  unsigned char row = (int)(y / 8);
+  b = (py == 0) ? 0x0 : b;
+  if ((x < LCD_WIDTH) && (y < LCD_HEIGHT)) {
+    b |= 1 << py;
+    gotoXY (x, row);
+    LcdWrite (LCD_DATA, b);
+  }
 }
 
 /*
@@ -121,7 +134,7 @@ void PCD8544::drawLine(void)
   }
 }
 */
-void PCD8544::drawBitmap(const unsigned char *data)
+void PCD8544::drawBitmap(const byte *data)
 {
   
 }

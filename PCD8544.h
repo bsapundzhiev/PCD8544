@@ -38,14 +38,15 @@ public:
   PCD8544(int sce, int rst, int dc, int sdin, int sc, int bl);
   void begin();
   void LcdClear(void);
-  virtual size_t write (uint8_t c);
+  virtual size_t write (byte c);
   void LcdCharacter(char);
-  void gotoXY(int x, int y);
+  void gotoXY(byte x, byte y);
   void drawLine(void);
   void setContrast(byte contrast);
   void setInverse(bool inverse);
   void setPower(bool on);
-  void drawBitmap(const unsigned char *data);
+  void drawBitmap(const byte *data);
+  void drawPX(byte x, byte y);
 };
 
 static const byte ASCII[][5] =

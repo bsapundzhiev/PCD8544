@@ -119,14 +119,15 @@
             s += String.fromCharCode(i);
         }
 
-        var ctx = document.getElementById('canvas-font').getContext('2d');
+		var canvas = document.getElementById('canvas-font');
+        var ctx = canvas.getContext('2d');
         ctx.font = "18px serif";
         ctx.fillText("H", 10, 10+ 18);
     
         var imgData  = ctx.getImageData(0, 0, WIDTH, HEIGHT).data;
 
         var rgbs = getRGB2GrayScale1(imgData); 
-        console.log(rgbs.toString());
+        //console.log(rgbs.toString());
     }
 
     exports.draw = draw;
