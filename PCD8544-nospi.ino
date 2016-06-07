@@ -70,10 +70,12 @@ void testLineFrameBuff() {
 
 void loop(void)
 {
-  for(int x =0; x < LCD_WIDTH; x++)
+  /*for(int x =0; x < LCD_WIDTH; x++)
   {
     lcd.drawPX(x,0);
-  } 
+  } */
+  lcd.plotRect(0,0, LCD_WIDTH-1, LCD_HEIGHT-1);
+  
   //testLineFrameBuff();
   lcd.gotoXY(4,1);
   lcd.print("Hello world");

@@ -96,10 +96,13 @@ void PCD8544::gotoXY(byte x, byte y)
 
 void PCD8544::drawPX(byte  x, byte  y)
 {
-  static unsigned char b;
-  unsigned char py = y % 8;
-  unsigned char row = (int)(y / 8);
-  b = (py == 0) ? 0x0 : b;
+  static byte b;
+  static byte prev;
+  
+  byte py = y % 8;
+  byte row = (int)(y / 8);
+  b = (prev != x) ? 0x0 : b;
+  prev = x;
   if ((x < LCD_WIDTH) && (y < LCD_HEIGHT)) {
     b |= 1 << py;
     gotoXY (x, row);
@@ -107,33 +110,79 @@ void PCD8544::drawPX(byte  x, byte  y)
   }
 }
 
-/*
-void PCD8544::drawLine(void)
+void PCD8544::plotLine(byte x1, byte y1, byte x2, byte y2)
 {
-  unsigned char  j;  
-  for(j=0; j<84; j++) // top
-  {
-    gotoXY (j,0);
-    LcdWrite (1,0x01);
-  }   
-  for(j=0; j<84; j++) //Bottom
-  {
-    gotoXY (j,5);
-    LcdWrite (1,0x80);
-  }   
+    byte deltax = (x2 - x1);     
+    byte deltay = (y2 - y1);     
+    byte x = x1;                 
+    byte y = y1;                 
 
-  for(j=0; j<6; j++) // Right
-  {
-    gotoXY (83,j);
-    LcdWrite (1,0xff);
-  }   
-  for(j=0; j<6; j++) // Left
-  {
-    gotoXY (0,j);
-    LcdWrite (1,0xff);
-  }
+    byte curpixel, xinc1, xinc2, den, num, numadd, numpixels, yinc1, yinc2;
+
+    if (x2 >= x1)               
+    {
+      xinc1 = 1;
+      xinc2 = 1;
+    }
+    else                          
+    {
+      xinc1 = -1;
+      xinc2 = -1;
+    }
+
+    if (y2 >= y1)               
+    {
+      yinc1 = 1;
+      yinc2 = 1;
+    }
+    else                          
+    {
+      yinc1 = -1;
+      yinc2 = -1;
+    }
+
+    if (deltax >= deltay)       
+    {
+      xinc1 = 0;                  
+      yinc2 = 0;                  
+      den = deltax;
+      num = deltax / 2;
+      numadd = deltay;
+      numpixels = deltax;       
+    }
+    else                          
+    {
+      xinc2 = 0;                  
+      yinc1 = 0;                  
+      den = deltay;
+      num = deltay / 2;
+      numadd = deltax;
+      numpixels = deltay;       
+    }
+
+    for (curpixel = 0; curpixel <= numpixels; curpixel++)
+    {
+      drawPX(x, y);         
+      num += numadd;              
+      if (num >= den)           
+      {
+        num -= den;         
+        x += xinc1;         
+        y += yinc1;        
+      }
+      x += xinc2;               
+      y += yinc2;            
+    }
 }
-*/
+
+void PCD8544::plotRect(byte left, byte top, byte right, byte bottom)
+{
+  plotLine(left, top, right, top); //top
+  plotLine(left, bottom, right, bottom); //bottom
+  plotLine(right, top, right, bottom); //right
+  plotLine(left, top, left, bottom); //left
+}
+
 void PCD8544::drawBitmap(const byte *data)
 {
   

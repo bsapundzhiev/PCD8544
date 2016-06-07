@@ -47,6 +47,8 @@ public:
   void setPower(bool on);
   void drawBitmap(const byte *data);
   void drawPX(byte x, byte y);
+  void plotLine(byte x1, byte y1, byte x2, byte y2);
+  void plotRect(byte left,byte top, byte right, byte bottom);
 };
 
 static const byte ASCII[][5] =
