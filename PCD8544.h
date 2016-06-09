@@ -30,8 +30,6 @@ class PCD8544 : public Print
   int pin_sdin;
   int pin_sclk;
   int pin_blight;
-  //command
-  //void LcdWrite(byte dc, byte data);
 
 public:
   void LcdWrite(byte dc, byte data);
@@ -45,10 +43,11 @@ public:
   void setContrast(byte contrast);
   void setInverse(bool inverse);
   void setPower(bool on);
-  void drawBitmap(const byte *data);
   void drawPX(byte x, byte y);
   void plotLine(byte x1, byte y1, byte x2, byte y2);
   void plotRect(byte left,byte top, byte right, byte bottom);
+  void plotRectFill(byte x0, byte y0, byte x1, byte y1);
+
 };
 
 static const byte ASCII[][5] =

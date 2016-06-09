@@ -183,8 +183,24 @@ void PCD8544::plotRect(byte left, byte top, byte right, byte bottom)
   plotLine(left, top, left, bottom); //left
 }
 
-void PCD8544::drawBitmap(const byte *data)
+void PCD8544::plotRectFill(byte x0, byte y0, byte x1, byte y1)
 {
-  
-}
+    byte xDiff;
 
+    if(x0 > x1)
+      xDiff = x0 - x1; //Find the difference between the x vars
+    else
+      xDiff = x1 - x0;
+
+    while(xDiff > 0)
+    {
+      plotLine(x0, y0, x0, y1);
+
+      if(x0 > x1)
+        x0--;
+      else
+        x0++;
+
+      xDiff--;
+    }
+}
