@@ -43,11 +43,11 @@ public:
   void setContrast(byte contrast);
   void setInverse(bool inverse);
   void setPower(bool on);
-  void drawPX(byte x, byte y);
+  void drawPX(byte x, byte y, boolean bw = BLACK);
   void plotLine(byte x1, byte y1, byte x2, byte y2);
   void plotRect(byte left,byte top, byte right, byte bottom);
   void plotRectFill(byte x0, byte y0, byte x1, byte y1);
-
+  void charToXY(byte character, byte x, byte y, boolean bw);
 };
 
 static const byte ASCII[][5] =

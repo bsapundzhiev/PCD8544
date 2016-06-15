@@ -35,7 +35,7 @@ Hardware: (Note most of these pins can be swapped)
 
 PCD8544 lcd(PIN_SCE, PIN_RESET,PIN_DC,PIN_SDIN,PIN_SCLK,PIN_BLIGHT);
 //PCD8544_fb lcd(PIN_SCE, PIN_RESET,PIN_DC,PIN_SDIN,PIN_SCLK,PIN_BLIGHT);
-
+int count;
 void setup(void)
 {
   lcd.begin();
@@ -74,12 +74,14 @@ void loop(void)
   {
     lcd.drawPX(x,0);
   } */
+  count++;
   lcd.plotRect(0,0, LCD_WIDTH-1, LCD_HEIGHT-1);
   
   //testLineFrameBuff();
   lcd.gotoXY(4,1);
   lcd.print("Hello world");
   //lcd.LcdWrite(LCD_D,0xff);
-  
+  lcd.charToXY('e', 4, 2 , (count %2) ? WHITE : BLACK);
   delay(5000);
 }
+

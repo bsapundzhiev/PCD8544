@@ -41,7 +41,7 @@ void PCD8544::begin()
 
 size_t PCD8544::write (byte c)
 {
-  LcdWrite(LCD_DATA, 0x00);
+  //LcdWrite(LCD_DATA, 0x00);
   for (int index = 0; index < 5; index++)
   {
     LcdWrite(LCD_DATA, ASCII[c - 0x20][index]);
@@ -94,19 +94,43 @@ void PCD8544::gotoXY(byte x, byte y)
   LcdWrite( 0, 0x40 | y);  // Row.  
 }
 
-void PCD8544::drawPX(byte  x, byte  y)
+void PCD8544::drawPX(byte  x, byte  y, boolean bw)
 {
-  static byte b;
-  static byte prev;
-  
+  static byte b, prev;
+ 
   byte py = y % 8;
   byte row = (int)(y / 8);
-  b = (prev != x) ? 0x0 : b;
+  b = (prev != x) ? 0x00 : b;
   prev = x;
   if ((x < LCD_WIDTH) && (y < LCD_HEIGHT)) {
-    b |= 1 << py;
+    if(bw){
+      b |= 1 << py;
+    } else {
+      b &= ~(1<< py);
+    }
     gotoXY (x, row);
     LcdWrite (LCD_DATA, b);
+  }
+}
+
+// This function will draw a char to specific position
+// x - row, y - col
+void PCD8544::charToXY(byte character, byte x, byte y, boolean bw)
+{ 
+  byte column;
+  gotoXY(x, y);
+  for (int i=0; i<5; i++) // 5 columns (x) per character
+  {
+    column = ASCII[character - 0x20][i];
+    if(!bw) {
+      for (int j=0; j<8; j++) {
+          if (column & (0x01<< j)) 
+            column &= ~(1<< j);
+          else 
+            column |= 1<< j;
+      }
+    }
+    LcdWrite (LCD_DATA, column);
   }
 }
 
