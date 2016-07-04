@@ -10,7 +10,7 @@
 #include "PCD8544.h"
 
 PCD8544::PCD8544(int sce, int rst, int dc, int sdin, int sclk, int bl):
-pin_sce(sce), pin_rst(rst), pin_dc(dc), pin_sdin(sdin),pin_sclk(sclk), pin_blight(bl)
+pin_sce(sce), pin_rst(rst), pin_dc(dc), pin_sdin(sdin),pin_sclk(sclk), pin_blight(bl), _largeNumbers(0)
 {}
 
 void PCD8544::begin() 
@@ -39,8 +39,37 @@ void PCD8544::begin()
   LcdClear();
 }
 
+void PCD8544::writeLargeNumber(byte c)
+{
+  byte prevX = _x, prevY = _y;
+
+  if(c < '.' || c > '9') {
+    return;
+  }
+  
+  for (int index = 0; index < 12; index++)
+  {
+    LcdWrite(LCD_DATA, Large_Numbers[c - '.'][index]);
+  }
+  
+  gotoXY(prevX, prevY + 1);
+  
+  for (int index = 12; index < 24; index++)
+  {
+    LcdWrite(LCD_DATA, Large_Numbers[c - '.'][index]);
+  }
+  
+  gotoXY(prevX + 12, prevY);
+  
+}
+
 size_t PCD8544::write (byte c)
 {
+  if(_largeNumbers) {
+    writeLargeNumber(c);
+    return 1;
+  } 
+  
   //LcdWrite(LCD_DATA, 0x00);
   for (int index = 0; index < 5; index++)
   {
@@ -48,7 +77,7 @@ size_t PCD8544::write (byte c)
   }
   LcdWrite(LCD_DATA, 0x00);
   return 1;   // one byte output
-}  
+} 
 
 void PCD8544::LcdClear()
 {
@@ -91,7 +120,9 @@ void PCD8544::setPower(bool on)
 void PCD8544::gotoXY(byte x, byte y)
 {
   LcdWrite( 0, 0x80 | x);  // Column.
-  LcdWrite( 0, 0x40 | y);  // Row.  
+  LcdWrite( 0, 0x40 | y);  // Row. 
+  _x = x;
+  _y = y; 
 }
 
 void PCD8544::drawPX(byte  x, byte  y, boolean bw)
@@ -227,4 +258,9 @@ void PCD8544::plotRectFill(byte x0, byte y0, byte x1, byte y1)
 
       xDiff--;
     }
+}
+
+void PCD8544::setLargeNumbers(bool on)
+{
+  _largeNumbers = on;
 }

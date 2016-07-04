@@ -38,6 +38,7 @@ PCD8544 lcd(PIN_SCE, PIN_RESET,PIN_DC,PIN_SDIN,PIN_SCLK,PIN_BLIGHT);
 int count;
 void setup(void)
 {
+  Serial.begin(9600);
   lcd.begin();
 }
 
@@ -75,13 +76,26 @@ void loop(void)
     lcd.drawPX(x,0);
   } */
   count++;
-  lcd.plotRect(0,0, LCD_WIDTH-1, LCD_HEIGHT-1);
+  //lcd.plotRect(0,0, LCD_WIDTH-1, LCD_HEIGHT-1);
   
-  //testLineFrameBuff();
-  lcd.gotoXY(4,1);
+  lcd.setLargeNumbers(false);
+  lcd.gotoXY(4, 0);
   lcd.print("Hello world");
+  lcd.plotLine(0,  9, LCD_WIDTH-1, 9);
+   
   //lcd.LcdWrite(LCD_D,0xff);
-  lcd.charToXY('e', 4, 2 , (count %2) ? WHITE : BLACK);
+  //lcd.charToXY('e', 4, 2 , (count %2) ? WHITE : BLACK);
+  
+  lcd.gotoXY(1, 2);
+  lcd.setLargeNumbers(true);
+  lcd.print(1024.5, 1);
+  lcd.setLargeNumbers(false);
+  
+  lcd.plotLine(0, 38 , LCD_WIDTH-1, 38);
+  
+  lcd.gotoXY(4, 5);
+  lcd.print("Hello world");
+  
   delay(5000);
 }
 
