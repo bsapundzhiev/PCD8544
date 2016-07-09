@@ -49,14 +49,16 @@ void PCD8544::writeLargeNumber(byte c)
   
   for (int index = 0; index < 12; index++)
   {
-    LcdWrite(LCD_DATA, Large_Numbers[c - '.'][index]);
+    LcdWrite(LCD_DATA, pgm_read_byte(&Large_Numbers[c - '.'][index]));
+    //LcdWrite(LCD_DATA, Large_Numbers[c - '.'][index]);
   }
   
   gotoXY(prevX, prevY + 1);
   
   for (int index = 12; index < 24; index++)
   {
-    LcdWrite(LCD_DATA, Large_Numbers[c - '.'][index]);
+    LcdWrite(LCD_DATA, pgm_read_byte(&Large_Numbers[c - '.'][index]));
+    //LcdWrite(LCD_DATA, Large_Numbers[c - '.'][index]);
   }
   
   gotoXY(prevX + 12, prevY);
@@ -264,3 +266,18 @@ void PCD8544::setLargeNumbers(bool on)
 {
   _largeNumbers = on;
 }
+
+void PCD8544::writeBitmap(const byte* bitmap, byte w , byte h)
+{
+    byte offset = 0;
+    for (byte i = 0; i < h; i++) {
+      gotoXY(_x, _y + i);
+      for (byte j = offset; j < w; j++) {
+        LcdWrite(LCD_DATA, bitmap[j]);
+      }
+          
+      LcdWrite(LCD_DATA, 0x00);
+      offset+=w;
+    }
+}
+

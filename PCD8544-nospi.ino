@@ -32,6 +32,7 @@ Hardware: (Note most of these pins can be swapped)
 #define PIN_SCLK    13 //3  // LCD SPIClk . Pin 4
 #define PIN_BLIGHT  9  //Back light
 
+#define MIN_SYMBOL      { 0x10, 0x30, 0x7F, 0x30, 0x10 }
 
 PCD8544 lcd(PIN_SCE, PIN_RESET,PIN_DC,PIN_SDIN,PIN_SCLK,PIN_BLIGHT);
 //PCD8544_fb lcd(PIN_SCE, PIN_RESET,PIN_DC,PIN_SDIN,PIN_SCLK,PIN_BLIGHT);
@@ -94,6 +95,8 @@ void loop(void)
   lcd.plotLine(0, 38 , LCD_WIDTH-1, 38);
   
   lcd.gotoXY(4, 5);
+  byte minSymbol[] = MIN_SYMBOL;
+  lcd.writeBitmap(minSymbol, 5);
   lcd.print("Hello world");
   
   delay(5000);
